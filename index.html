@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ============================================== -->
+  <!-- Author: Max Butz                               -->
+  <!-- Page: Home                                      -->
+  <!-- Site: Dynasty Desk - Static Website Project    -->
+  <!-- ============================================== -->
+  <meta charset="utf-8">
+  <meta name="author" content="Max Butz">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dynasty Desk | Dynasty fantasy football values and trade tools</title>
+  <meta name="description" content="Dynasty Desk tracks dynasty fantasy football player values, rookie scouting, and trade math for superflex leagues.">
+  <style>
+  /* ---------- SITE STYLES (inlined) ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+/* ==========================================================================
+   Dynasty Desk - External stylesheet
+   Max Butz - ITEC 362 Introduction to Web Systems
+   ========================================================================== */
+
+/* ---------- Fonts ---------- */
+/* ---------- Design tokens ---------- */
+:root {
+  --bg: #0b0c0e;
+  --surface: #141719;
+  --surface-2: #1b1f22;
+  --border: #24292d;
+  --text: #f2f4f5;
+  --muted: #8a9199;
+  --accent: #c8f751;
+  --accent-dim: #9ec93a;
+  --accent-ink: #0b0c0e;
+  --orange: #f26522;
+  --up: #9fe870;
+  --down: #ff7a7a;
+  --radius: 12px;
+  --maxw: 1120px;
+}
+
+/* ---------- Base ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Space Grotesk", "Inter", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+h1 {
+  font-size: 40px;
+  line-height: 1.15;
+}
+
+h2 {
+  font-size: 26px;
+}
+
+h3 {
+  font-size: 17px;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.lede {
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 620px;
+  margin-top: 12px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- Site header ---------- */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background-color: rgba(11, 12, 14, 0.92);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 62px;
+}
+
+.logo {
+  font-family: "Space Grotesk", Arial, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+}
+
+.logo span {
+  color: var(--accent);
+}
+
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 26px;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav a {
+  color: var(--muted);
+  font-size: 13px;
+  padding-bottom: 3px;
+  border-bottom: 2px solid transparent;
+}
+
+.main-nav a:hover {
+  color: var(--text);
+}
+
+.main-nav a.is-active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-block;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-dim);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-outline:hover {
+  border-color: var(--muted);
+}
+
+.btn-orange {
+  background-color: var(--orange);
+  color: #ffffff;
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 8px;
+}
+
+.btn-sm {
+  padding: 7px 16px;
+  font-size: 12px;
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.card h3 {
+  margin-bottom: 8px;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ---------- Page shell ---------- */
+.page {
+  padding: 44px 0 64px;
+}
+
+.section {
+  margin-top: 46px;
+}
+
+.section-head {
+  margin-bottom: 18px;
+}
+
+/* ---------- Badges / deltas ---------- */
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-up {
+  background-color: rgba(159, 232, 112, 0.14);
+  color: var(--up);
+}
+
+.badge-down {
+  background-color: rgba(255, 122, 122, 0.14);
+  color: var(--down);
+}
+
+.delta-up {
+  color: var(--up);
+}
+
+.delta-down {
+  color: var(--down);
+}
+
+/* ---------- Grids ---------- */
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* ---------- Player cards (home + rookie) ---------- */
+.player-card {
+  position: relative;
+}
+
+.player-card .avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  margin-bottom: 42px;
+}
+
+.player-card .name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.player-card .meta {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.player-card .value {
+  color: var(--accent);
+  font-family: "Space Grotesk", Arial, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.player-card .badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+/* ---------- Data table ---------- */
+.table-wrap {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+caption {
+  caption-side: top;
+  text-align: left;
+  padding: 14px 18px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+thead th {
+  text-align: left;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(36, 41, 45, 0.7);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background-color: rgba(27, 31, 34, 0.6);
+}
+
+td.rank {
+  color: var(--muted);
+}
+
+td.player {
+  font-weight: 500;
+}
+
+td.value {
+  font-weight: 600;
+}
+
+.pos-pill {
+  display: inline-block;
+  min-width: 34px;
+  text-align: center;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent-ink);
+}
+
+.pos-wr { background-color: #c8f751; }
+.pos-rb { background-color: #6fd3f7; }
+.pos-qb { background-color: #f78fb3; }
+.pos-te { background-color: #f7c55f; }
+
+/* ---------- Filter bar ---------- */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.field {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.filter-bar .search {
+  margin-left: auto;
+  min-width: 210px;
+}
+
+/* ---------- Pagination ---------- */
+.pagination {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+}
+
+.pagination a {
+  display: block;
+  min-width: 30px;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pagination a.is-current {
+  background-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+/* ---------- Forms ---------- */
+.form-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 26px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.form-row {
+  margin-bottom: 18px;
+}
+
+.form-row label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+
+.form-row .field {
+  width: 100%;
+}
+
+textarea.field {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.choice-group {
+  display: flex;
+  gap: 8px;
+}
+
+.choice {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+
+.choice.is-selected {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.checkbox-row {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.checkbox-row input {
+  accent-color: var(--accent);
+  margin: 2px 0 0;
+}
+
+.form-note {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 12px;
+}
+
+.char-count {
+  text-align: right;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 5px;
+}
+
+/* ---------- Site footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 70px;
+  padding: 34px 0 26px;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.footer-cols {
+  display: flex;
+  gap: 64px;
+}
+
+.footer-cols ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-cols li {
+  margin-bottom: 7px;
+}
+
+.footer-cols a {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.footer-cols a:hover {
+  color: var(--text);
+}
+
+.footer-tagline {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.copyright {
+  color: #5c636a;
+  font-size: 11px;
+  margin-top: 28px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .grid-4,
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  h1 {
+    font-size: 30px;
+  }
+
+  .grid-4,
+  .grid-3,
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-cols {
+    gap: 34px;
+  }
+}
+
+
+/* ---------- Image placeholders (added) ---------- */
+.avatar, .headshot { display: flex; align-items: center; justify-content: center; }
+.avatar img, .headshot img { display: block; }
+.logo img { display: inline-block; }
+
+  </style>
+
+  <!-- INTERNAL CSS: styles that only the home page needs -->
+  <style>
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 86px 0 74px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      width: 760px;
+      height: 300px;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse at center, #d9ff66 0%, rgba(200, 247, 81, 0.55) 42%, rgba(11, 12, 14, 0) 72%);
+      filter: blur(46px);
+      opacity: 0.8;
+      z-index: 0;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 46px;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 430px;
+      margin: 16px auto 0;
+      font-size: 14px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 26px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 34px;
+      justify-content: center;
+      margin-top: 38px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .home-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .news-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .news-list li {
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .news-list li:last-child {
+      border-bottom: none;
+    }
+
+    .news-list .headline {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .news-list .stamp {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .newsletter .field {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .home-layout {
+        grid-template-columns: 1fr;
+      }
+      .hero h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="index.html"><img src="images/logo-mark.svg" alt="Dynasty Desk logo" style="width:26px;height:26px;vertical-align:-5px;margin-right:8px">DYNASTY <span>DESK</span></a>
+      <nav class="main-nav" aria-label="Main">
+        <ul>
+          <li><a class="is-active" href="index.html">Home</a></li>
+          <li><a href="rankings.html">Rankings</a></li>
+          <li><a href="rookie-central.html">Rookie Central</a></li>
+          <li><a href="trade-calculator.html">Trade Calculator</a></li>
+          <li><a href="support.html">Support</a></li>
+        </ul>
+      </nav>
+      <a class="btn btn-accent btn-sm" href="support.html">Sign up</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Dynasty doesn't stop in January.</h1>
+        <p>Player values, rookie scouting, and trade math for managers who run their roster all twelve months of the year.</p>
+        <div class="hero-actions">
+          <a class="btn btn-accent" href="trade-calculator.html">Open trade calculator</a>
+          <a class="btn btn-outline" href="rankings.html">Browse rankings</a>
+        </div>
+        <div class="hero-stats">
+          <span>640 roster values</span>
+          <span>Trade calculator</span>
+          <span>Rookie analytics</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <section class="section">
+        <div class="section-head">
+          <p class="eyebrow">Trending now</p>
+          <h2>Who's moving this week</h2>
+        </div>
+
+        <div class="grid grid-4">
+          <article class="card player-card">
+            <span class="badge badge-up">&plus; Rise</span>
+            <div class="avatar"><img src="images/player-placeholder.svg" alt="Player photo placeholder" style="width:52px;height:52px;opacity:.45;margin:auto"></div>
+            <p class="name">Jordan Vance</p>
+            <p class="meta">WR &middot; CIN &middot; Age 21</p>
+            <p class="value">9,042</p>
+          </article>
+
+          <article class="card player-card">
+            <span class="badge badge-down">&minus; Fall</span>
+            <div class="avatar"><img src="images/player-placeholder.svg" alt="Player photo placeholder" style="width:52px;height:52px;opacity:.45;margin:auto"></div>
+            <p class="name">Malik Brooks</p>
+            <p class="meta">RB &middot; GB &middot; Age 22</p>
+            <p class="value">7,505</p>
+          </article>
+
+          <article class="card player-card">
+            <span class="badge badge-up">&plus; Rise</span>
+            <div class="avatar"><img src="images/player-placeholder.svg" alt="Player photo placeholder" style="width:52px;height:52px;opacity:.45;margin:auto"></div>
+            <p class="name">Tyrese Lamont</p>
+            <p class="meta">RB &middot; LV &middot; Age 21</p>
+            <p class="value">8,498</p>
+          </article>
+
+          <article class="card player-card">
+            <span class="badge badge-up">&plus; Rise</span>
+            <div class="avatar"><img src="images/player-placeholder.svg" alt="Player photo placeholder" style="width:52px;height:52px;opacity:.45;margin:auto"></div>
+            <p class="name">Bryce Whitfield</p>
+            <p class="meta">WR &middot; SEA &middot; Age 22</p>
+            <p class="value">8,040</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="home-layout">
+          <div>
+            <div class="section-head">
+              <p class="eyebrow">Latest</p>
+              <h2>News and notes</h2>
+            </div>
+
+            <ul class="news-list">
+              <li>
+                <p class="headline">Vance cleared for full practice, WR1 value holds</p>
+                <p class="stamp">2 hours ago &middot; Rankings</p>
+              </li>
+              <li>
+                <p class="headline">Denver backfield splits three ways in camp reports</p>
+                <p class="stamp">6 hours ago &middot; Rankings</p>
+              </li>
+              <li>
+                <p class="headline">Rookie TE class is the deepest since 2023</p>
+                <p class="stamp">1 day ago &middot; Rookie Central</p>
+              </li>
+              <li>
+                <p class="headline">Trade deadline movers: five names to buy now</p>
+                <p class="stamp">2 days ago &middot; Strategy</p>
+              </li>
+              <li>
+                <p class="headline">Superflex QB values climb after draft capital shift</p>
+                <p class="stamp">3 days ago &middot; Rankings</p>
+              </li>
+            </ul>
+          </div>
+
+          <aside class="card newsletter">
+            <p class="eyebrow">Newsletter</p>
+            <h3>Offseason Weekly</h3>
+            <p>One email, every Tuesday. Recovery through August. Rookie film notes and value swings.</p>
+            <form action="support.html" method="get" style="margin-top:14px;">
+              <label class="muted" for="news-email" style="font-size:11px;">Email address</label>
+              <input class="field" type="email" id="news-email" name="email" placeholder="you@example.com" style="margin-top:6px;">
+              <button class="btn btn-accent" type="submit" style="width:100%;">Subscribe</button>
+            </form>
+          </aside>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <p class="logo"><img src="images/logo-mark.svg" alt="Dynasty Desk logo" style="width:22px;height:22px;vertical-align:-4px;margin-right:6px">DYNASTY <span>DESK</span></p>
+          <p class="footer-tagline">Your dynasty roster, every week.</p>
+        </div>
+        <div class="footer-cols">
+          <ul>
+            <li><a href="rankings.html">Rankings</a></li>
+            <li><a href="rookie-central.html">Rookie Central</a></li>
+            <li><a href="trade-calculator.html">Trade Calculator</a></li>
+          </ul>
+          <ul>
+            <li><a href="support.html">About</a></li>
+            <li><a href="support.html">Contact</a></li>
+            <li><a href="support.html">Newsletter</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="copyright">&copy; 2026 Dynasty Desk. Built by Max Butz.</p>
+    </div>
+  </footer>
+</body>
+</html>

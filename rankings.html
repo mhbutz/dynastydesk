@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ============================================== -->
+  <!-- Author: Max Butz                               -->
+  <!-- Page: Dynasty Rankings                          -->
+  <!-- Site: Dynasty Desk - Static Website Project    -->
+  <!-- ============================================== -->
+  <meta charset="utf-8">
+  <meta name="author" content="Max Butz">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dynasty Rankings | Dynasty Desk</title>
+  <meta name="description" content="Dynasty player values updated daily from live trade data. Filter by team, position, and age.">
+  <style>
+  /* ---------- SITE STYLES (inlined) ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+/* ==========================================================================
+   Dynasty Desk - External stylesheet
+   Max Butz - ITEC 362 Introduction to Web Systems
+   ========================================================================== */
+
+/* ---------- Fonts ---------- */
+/* ---------- Design tokens ---------- */
+:root {
+  --bg: #0b0c0e;
+  --surface: #141719;
+  --surface-2: #1b1f22;
+  --border: #24292d;
+  --text: #f2f4f5;
+  --muted: #8a9199;
+  --accent: #c8f751;
+  --accent-dim: #9ec93a;
+  --accent-ink: #0b0c0e;
+  --orange: #f26522;
+  --up: #9fe870;
+  --down: #ff7a7a;
+  --radius: 12px;
+  --maxw: 1120px;
+}
+
+/* ---------- Base ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Space Grotesk", "Inter", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+h1 {
+  font-size: 40px;
+  line-height: 1.15;
+}
+
+h2 {
+  font-size: 26px;
+}
+
+h3 {
+  font-size: 17px;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.lede {
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 620px;
+  margin-top: 12px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- Site header ---------- */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background-color: rgba(11, 12, 14, 0.92);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 62px;
+}
+
+.logo {
+  font-family: "Space Grotesk", Arial, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+}
+
+.logo span {
+  color: var(--accent);
+}
+
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 26px;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav a {
+  color: var(--muted);
+  font-size: 13px;
+  padding-bottom: 3px;
+  border-bottom: 2px solid transparent;
+}
+
+.main-nav a:hover {
+  color: var(--text);
+}
+
+.main-nav a.is-active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-block;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-dim);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-outline:hover {
+  border-color: var(--muted);
+}
+
+.btn-orange {
+  background-color: var(--orange);
+  color: #ffffff;
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 8px;
+}
+
+.btn-sm {
+  padding: 7px 16px;
+  font-size: 12px;
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.card h3 {
+  margin-bottom: 8px;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ---------- Page shell ---------- */
+.page {
+  padding: 44px 0 64px;
+}
+
+.section {
+  margin-top: 46px;
+}
+
+.section-head {
+  margin-bottom: 18px;
+}
+
+/* ---------- Badges / deltas ---------- */
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-up {
+  background-color: rgba(159, 232, 112, 0.14);
+  color: var(--up);
+}
+
+.badge-down {
+  background-color: rgba(255, 122, 122, 0.14);
+  color: var(--down);
+}
+
+.delta-up {
+  color: var(--up);
+}
+
+.delta-down {
+  color: var(--down);
+}
+
+/* ---------- Grids ---------- */
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* ---------- Player cards (home + rookie) ---------- */
+.player-card {
+  position: relative;
+}
+
+.player-card .avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  margin-bottom: 42px;
+}
+
+.player-card .name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.player-card .meta {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.player-card .value {
+  color: var(--accent);
+  font-family: "Space Grotesk", Arial, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.player-card .badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+/* ---------- Data table ---------- */
+.table-wrap {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+caption {
+  caption-side: top;
+  text-align: left;
+  padding: 14px 18px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+thead th {
+  text-align: left;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(36, 41, 45, 0.7);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background-color: rgba(27, 31, 34, 0.6);
+}
+
+td.rank {
+  color: var(--muted);
+}
+
+td.player {
+  font-weight: 500;
+}
+
+td.value {
+  font-weight: 600;
+}
+
+.pos-pill {
+  display: inline-block;
+  min-width: 34px;
+  text-align: center;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent-ink);
+}
+
+.pos-wr { background-color: #c8f751; }
+.pos-rb { background-color: #6fd3f7; }
+.pos-qb { background-color: #f78fb3; }
+.pos-te { background-color: #f7c55f; }
+
+/* ---------- Filter bar ---------- */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.field {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.filter-bar .search {
+  margin-left: auto;
+  min-width: 210px;
+}
+
+/* ---------- Pagination ---------- */
+.pagination {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+}
+
+.pagination a {
+  display: block;
+  min-width: 30px;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pagination a.is-current {
+  background-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+/* ---------- Forms ---------- */
+.form-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 26px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.form-row {
+  margin-bottom: 18px;
+}
+
+.form-row label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+
+.form-row .field {
+  width: 100%;
+}
+
+textarea.field {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.choice-group {
+  display: flex;
+  gap: 8px;
+}
+
+.choice {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+
+.choice.is-selected {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.checkbox-row {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.checkbox-row input {
+  accent-color: var(--accent);
+  margin: 2px 0 0;
+}
+
+.form-note {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 12px;
+}
+
+.char-count {
+  text-align: right;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 5px;
+}
+
+/* ---------- Site footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 70px;
+  padding: 34px 0 26px;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.footer-cols {
+  display: flex;
+  gap: 64px;
+}
+
+.footer-cols ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-cols li {
+  margin-bottom: 7px;
+}
+
+.footer-cols a {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.footer-cols a:hover {
+  color: var(--text);
+}
+
+.footer-tagline {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.copyright {
+  color: #5c636a;
+  font-size: 11px;
+  margin-top: 28px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .grid-4,
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  h1 {
+    font-size: 30px;
+  }
+
+  .grid-4,
+  .grid-3,
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-cols {
+    gap: 34px;
+  }
+}
+
+
+/* ---------- Image placeholders (added) ---------- */
+.avatar, .headshot { display: flex; align-items: center; justify-content: center; }
+.avatar img, .headshot img { display: block; }
+.logo img { display: inline-block; }
+
+  </style>
+
+  <!-- INTERNAL CSS: styles that only the rankings page needs -->
+  <style>
+    .crumb {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .rank-head {
+      margin-bottom: 26px;
+    }
+
+    td.thirty {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    th.num,
+    td.num {
+      text-align: right;
+    }
+
+    .calc-note {
+      margin-top: 22px;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="index.html"><img src="images/logo-mark.svg" alt="Dynasty Desk logo" style="width:26px;height:26px;vertical-align:-5px;margin-right:8px">DYNASTY <span>DESK</span></a>
+      <nav class="main-nav" aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a class="is-active" href="rankings.html">Rankings</a></li>
+          <li><a href="rookie-central.html">Rookie Central</a></li>
+          <li><a href="trade-calculator.html">Trade Calculator</a></li>
+          <li><a href="support.html">Support</a></li>
+        </ul>
+      </nav>
+      <a class="btn btn-accent btn-sm" href="support.html">Sign up</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <div class="rank-head">
+        <p class="crumb">Rankings</p>
+        <h1>Dynasty player values</h1>
+        <p class="lede">Values update daily from live trade data. Filter by format, position, and age to match your league settings.</p>
+      </div>
+
+      <form class="filter-bar" action="rankings.html" method="get">
+        <label class="muted" for="format" style="font-size:11px;">Format</label>
+        <select class="field" id="format" name="format">
+          <option>Superflex</option>
+          <option>One quarterback</option>
+          <option>Tight end premium</option>
+        </select>
+
+        <label class="muted" for="position" style="font-size:11px;">Position</label>
+        <select class="field" id="position" name="position">
+          <option>All positions</option>
+          <option>QB</option>
+          <option>RB</option>
+          <option>WR</option>
+          <option>TE</option>
+        </select>
+
+        <label class="muted" for="age" style="font-size:11px;">Age</label>
+        <select class="field" id="age" name="age">
+          <option>All ages</option>
+          <option>21 and under</option>
+          <option>22 to 25</option>
+          <option>26 and up</option>
+        </select>
+
+        <label class="muted" for="search" style="font-size:11px;">Search</label>
+        <input class="field search" type="search" id="search" name="q" placeholder="Search a player">
+      </form>
+
+      <div class="table-wrap">
+        <table>
+          <caption>Top 14 dynasty values, superflex scoring, updated today</caption>
+          <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">Player</th>
+              <th scope="col">Pos</th>
+              <th scope="col">Team</th>
+              <th scope="col" class="num">Age</th>
+              <th scope="col" class="num">Value</th>
+              <th scope="col" class="num">30d</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rank">1</td>
+              <td class="player">Jordan Vance</td>
+              <td><span class="pos-pill pos-wr">WR</span></td>
+              <td>CIN</td>
+              <td class="num">21</td>
+              <td class="num value">9,042</td>
+              <td class="thirty delta-up">+1,140</td>
+            </tr>
+            <tr>
+              <td class="rank">2</td>
+              <td class="player">Amari Cole</td>
+              <td><span class="pos-pill pos-wr">WR</span></td>
+              <td>CIN</td>
+              <td class="num">24</td>
+              <td class="num value">8,910</td>
+              <td class="thirty delta-up">+655</td>
+            </tr>
+            <tr>
+              <td class="rank">3</td>
+              <td class="player">Tyrese Lamont</td>
+              <td><span class="pos-pill pos-rb">RB</span></td>
+              <td>LV</td>
+              <td class="num">21</td>
+              <td class="num value">8,498</td>
+              <td class="thirty delta-up">+910</td>
+            </tr>
+            <tr>
+              <td class="rank">4</td>
+              <td class="player">Deshawn Pryor</td>
+              <td><span class="pos-pill pos-qb">QB</span></td>
+              <td>ATL</td>
+              <td class="num">23</td>
+              <td class="num value">8,120</td>
+              <td class="thirty muted">&mdash;</td>
+            </tr>
+            <tr>
+              <td class="rank">5</td>
+              <td class="player">Kellen Marsh</td>
+              <td><span class="pos-pill pos-wr">WR</span></td>
+              <td>DEN</td>
+              <td class="num">20</td>
+              <td class="num value">8,060</td>
+              <td class="thirty delta-up">+150</td>
+            </tr>
+            <tr>
+              <td class="rank">6</td>
+              <td class="player">Bryce Whitfield</td>
+              <td><span class="pos-pill pos-wr">WR</span></td>
+              <td>SEA</td>
+              <td class="num">22</td>
+              <td class="num value">8,040</td>
+              <td class="thirty delta-up">+1,215</td>
+            </tr>
+            <tr>
+              <td class="rank">7</td>
+              <td class="player">Isaiah Fontaine</td>
+              <td><span class="pos-pill pos-te">TE</span></td>
+              <td>NYJ</td>
+              <td class="num">23</td>
+              <td class="num value">7,905</td>
+              <td class="thirty delta-up">+40</td>
+            </tr>
+            <tr>
+              <td class="rank">8</td>
+              <td class="player">Cam Ellery</td>
+              <td><span class="pos-pill pos-wr">WR</span></td>
+              <td>MIA</td>
+              <td class="num">21</td>
+              <td class="num value">7,880</td>
+              <td class="thirty delta-up">+445</td>
+            </tr>
+            <tr>
+              <td class="rank">9</td>
+              <td class="player">Zion Barrett</td>
+              <td><span class="pos-pill pos-wr">WR</span></td>
+              <td>HOU</td>
+              <td class="num">21</td>
+              <td class="num value">7,746</td>
+              <td class="thirty delta-up">+220</td>
+            </tr>
+            <tr>
+              <td class="rank">10</td>
+              <td class="player">Nate Holloway</td>
+              <td><span class="pos-pill pos-rb">RB</span></td>
+              <td>PHI</td>
+              <td class="num">22</td>
+              <td class="num value">7,610</td>
+              <td class="thirty delta-up">+150</td>
+            </tr>
+            <tr>
+              <td class="rank">11</td>
+              <td class="player">Malik Brooks</td>
+              <td><span class="pos-pill pos-rb">RB</span></td>
+              <td>GB</td>
+              <td class="num">22</td>
+              <td class="num value">7,505</td>
+              <td class="thirty delta-down">&minus;390</td>
+            </tr>
+            <tr>
+              <td class="rank">12</td>
+              <td class="player">Silas Trent</td>
+              <td><span class="pos-pill pos-qb">QB</span></td>
+              <td>MIN</td>
+              <td class="num">25</td>
+              <td class="num value">7,320</td>
+              <td class="thirty muted">&mdash;</td>
+            </tr>
+            <tr>
+              <td class="rank">13</td>
+              <td class="player">Quinton Reese</td>
+              <td><span class="pos-pill pos-wr">WR</span></td>
+              <td>TEN</td>
+              <td class="num">23</td>
+              <td class="num value">6,940</td>
+              <td class="thirty delta-up">+1,065</td>
+            </tr>
+            <tr>
+              <td class="rank">14</td>
+              <td class="player">Dario Benton</td>
+              <td><span class="pos-pill pos-te">TE</span></td>
+              <td>DAL</td>
+              <td class="num">22</td>
+              <td class="num value">6,708</td>
+              <td class="thirty delta-up">+515</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <nav aria-label="Rankings pages">
+        <ul class="pagination">
+          <li><a class="is-current" href="rankings.html">1</a></li>
+          <li><a href="rankings.html">2</a></li>
+          <li><a href="rankings.html">3</a></li>
+          <li><a href="rankings.html">4</a></li>
+          <li><a href="rankings.html">5</a></li>
+          <li><a href="rankings.html">&hellip;</a></li>
+          <li><a href="rankings.html">48</a></li>
+        </ul>
+      </nav>
+
+      <section class="card calc-note">
+        <h3>How values are calculated</h3>
+        <p>Dynasty values are derived from completed trades across 1,200 plus active leagues, weighted by recency and league format. Age, positional scarcity, and draft capital adjust the values every week, so a player who wins a title in October will not look the same in March.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <p class="logo"><img src="images/logo-mark.svg" alt="Dynasty Desk logo" style="width:22px;height:22px;vertical-align:-4px;margin-right:6px">DYNASTY <span>DESK</span></p>
+          <p class="footer-tagline">Your dynasty roster, every week.</p>
+        </div>
+        <div class="footer-cols">
+          <ul>
+            <li><a href="rankings.html">Rankings</a></li>
+            <li><a href="rookie-central.html">Rookie Central</a></li>
+            <li><a href="trade-calculator.html">Trade Calculator</a></li>
+          </ul>
+          <ul>
+            <li><a href="support.html">About</a></li>
+            <li><a href="support.html">Contact</a></li>
+            <li><a href="support.html">Newsletter</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="copyright">&copy; 2026 Dynasty Desk. Built by Max Butz.</p>
+    </div>
+  </footer>
+</body>
+</html>
